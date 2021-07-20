@@ -25,20 +25,20 @@
 
 #### Supported Storage `Driver`
 
-- [File]() - Basic driver that stores migration meta-data in a local JSON file (demonstrates how a `Driver` without any reliance or dependency on `database/sql` can be written.)
-- [MySQL / MariaDB]()
-- [SQLite]()
-- [PostgreSQL]()
+- [File](https://pkg.go.dev/github.com/harwoeck/adapt/core#NewFileDriver) - Basic driver that stores migration meta-data in a local JSON file (demonstrates how a `Driver` without any reliance or dependency on `database/sql` can be written.)
+- [MySQL / MariaDB](https://pkg.go.dev/github.com/harwoeck/adapt/core#NewMySQLDriver)
+- [SQLite](https://pkg.go.dev/github.com/harwoeck/adapt/core#NewSQLiteDriver)
+- [PostgreSQL](https://pkg.go.dev/github.com/harwoeck/adapt/core#NewPostgresDriver)
 - [Add driver ?](https://github.com/harwoeck/adapt/issues/new)
 
-**Any other storage backend** by providing your own [`Driver`](), [`DatabaseDriver`]() or [`SqlStatementsDriver`](). Unlike most other migration tools, with _adapt_ there is no reliance on `database/sql` (such a case can be seen with the included `FileDriver`)
+**Any other storage backend** by providing your own [`Driver`](https://pkg.go.dev/github.com/harwoeck/adapt/core#Driver), [`DatabaseDriver`](https://pkg.go.dev/github.com/harwoeck/adapt/core#DatabaseDriver) or [`SqlStatementsDriver`](https://pkg.go.dev/github.com/harwoeck/adapt/core#SqlStatementsDriver). Unlike most other migration tools, with _adapt_ there is no reliance on `database/sql` (such a case can be seen with the included `FileDriver`)
 
 #### Supported Migrations
 
-- [Go Code]()
-- [Filesystem]()
-- [In-memory]()
-- [Embedded Filesystem]() - Using Go 1.16+ [go:embed](https://golang.org/pkg/embed/)
+- [Go Code](https://pkg.go.dev/github.com/harwoeck/adapt/core#NewCodePackageSource)
+- [Filesystem](https://pkg.go.dev/github.com/harwoeck/adapt/core#NewFilesystemSource)
+- [In-memory](https://pkg.go.dev/github.com/harwoeck/adapt/core#NewMemoryFSSource)
+- [Embedded Filesystem](https://pkg.go.dev/github.com/harwoeck/adapt/core116#NewEmbedFSSource) - Using Go 1.16+ [go:embed](https://pkg.go.dev/embed)
 
 > Please support this project and provide additional sources that could be useful for other people
 
@@ -61,7 +61,7 @@ err := adapt.Migrate(
     })
 ```
 
-**Next example:** Due to compliance rules you decide encrypt the email address of your users inside your database. Using _adapt_ you simply provide one of `adapt.Hook`'s callback functions and during your next deployment _adapt_ will notice that this migration hasn't been applied and therefore call your migration hook. When no error is returned _adapt_ will commit the transaction and update the schema table with the relevant meta information.
+**Next example:** Due to compliance rules you decide encrypt the email address of your users inside your database. Using _adapt_ you simply provide one of [`adapt.Hook`](https://pkg.go.dev/github.com/harwoeck/adapt/core#Hook)'s callback functions and during your next deployment _adapt_ will notice that this migration hasn't been applied and therefore call your migration hook. When no error is returned _adapt_ will commit the transaction and update the schema table with the relevant meta information.
 
 ```go
 err := adapt.Migrate(
