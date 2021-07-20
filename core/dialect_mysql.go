@@ -77,9 +77,11 @@ func MySQLTxBeginOpts(factory func() (context.Context, *sql.TxOptions)) MySQLOpt
 // MySQLDisableTx disables transaction for this driver. When set adapt will never
 // run a migration inside a transaction, even when the ParsedMigration reports to
 // use a transaction.
-func MySQLDisableTx(driver *mysqlDriver) error {
-	driver.txDisabled = true
-	return nil
+func MySQLDisableTx() MySQLOption {
+	return func(driver *mysqlDriver) error {
+		driver.txDisabled = true
+		return nil
+	}
 }
 
 // NewMySQLDriver returns a DatabaseDriver from a sql.DB and variadic MySQLOption

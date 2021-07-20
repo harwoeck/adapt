@@ -16,9 +16,11 @@ type SQLiteOption func(*sqliteDriver) error
 // SQLiteDisableTx disables transaction for this driver. When set adapt will never
 // run a migration inside a transaction, even when the ParsedMigration reports to
 // use a transaction.
-func SQLiteDisableTx(driver *sqliteDriver) error {
-	driver.txDisabled = true
-	return nil
+func SQLiteDisableTx() SQLiteOption {
+	return func(driver *sqliteDriver) error {
+		driver.txDisabled = true
+		return nil
+	}
 }
 
 // SQLiteTxBeginOpts provides a factory function for creating a context.Context and
