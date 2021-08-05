@@ -178,17 +178,17 @@ func (d *mysqlDriver) Healthy() error {
 }
 
 func (d *mysqlDriver) SupportsLocks() bool {
-	return true
+	return false
 }
 
 func (d *mysqlDriver) AcquireLock() (query string) {
-	// https://dev.mysql.com/doc/refman/8.0/en/lock-tables.html
-	return fmt.Sprintf("LOCK TABLE %s WRITE", d.tableName)
+	d.log.DPanic("not supported")
+	return ""
 }
 
 func (d *mysqlDriver) ReleaseLock() (query string) {
-	// https://dev.mysql.com/doc/refman/8.0/en/lock-tables.html
-	return "UNLOCK TABLES"
+	d.log.DPanic("not supported")
+	return ""
 }
 
 func (d *mysqlDriver) ListMigrations() (query string) {
@@ -225,7 +225,7 @@ func (d *mysqlDriver) TxBeginOpts() (ctx context.Context, opts *sql.TxOptions) {
 }
 
 func (d *mysqlDriver) UseGlobalTx() bool {
-	return false
+	return true
 }
 
 func (d *mysqlDriver) DeleteMigration(migrationID string) (query string, args []interface{}) {
