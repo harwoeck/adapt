@@ -84,6 +84,15 @@ func MySQLDisableTx() MySQLOption {
 	}
 }
 
+// MySQLDisableDBClose instructs the driver not to close the *sql.DB on the
+// Driver.Close callback, but leave it open.
+func MySQLDisableDBClose() MySQLOption {
+	return func(driver *mysqlDriver) error {
+		driver.optDisableDBClose = true
+		return nil
+	}
+}
+
 // NewMySQLDriver returns a DatabaseDriver from a sql.DB and variadic MySQLOption
 // that can interact with a MySQL database.
 func NewMySQLDriver(db *sql.DB, opts ...MySQLOption) DatabaseDriver {
@@ -108,6 +117,7 @@ type mysqlDriver struct {
 	log                logger.Logger
 	txBeginOptsFactory func() (context.Context, *sql.TxOptions)
 	txDisabled         bool
+	optDisableDBClose  bool
 }
 
 func (d *mysqlDriver) Name() string {
@@ -196,7 +206,10 @@ func (d *mysqlDriver) SetMigrationToFinished(migrationID string) (query string, 
 }
 
 func (d *mysqlDriver) Close() error {
-	return d.db.Close()
+	if !d.optDisableDBClose {
+		return d.db.Close()
+	}
+	return nil
 }
 
 func (d *mysqlDriver) DB() *sql.DB {
