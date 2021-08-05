@@ -14,8 +14,8 @@ import (
 // MySQL dialect.
 type MySQLOption func(*mysqlDriver) error
 
-// MySQLDBName sets the database name in which adapt's meta-table is stored. By
-// default this database is named "_adapt". However you can also specify your own
+// MySQLDBName sets the database name in which adapts meta-table is stored. By
+// default, this database is named "_adapt". However, you can also specify your own
 // database. During starting adapt the database will be created/checked if exists
 // using the MySQLDBCreateStatement
 func MySQLDBName(dbName string) MySQLOption {
@@ -31,7 +31,7 @@ func MySQLDBName(dbName string) MySQLOption {
 }
 
 // MySQLDBCreateStatement sets the statement used to create-if-not-exists the
-// database used for adapt's meta-table. The name must contain a single %s
+// database used for adapts meta-table. The name must contain a single %s
 // placeholder, which will be formatted with the set MySQLDBName or "_adapt"
 // by default.
 //
@@ -49,7 +49,7 @@ func MySQLDBCreateStatement(stmt string) MySQLOption {
 	}
 }
 
-// MySQLTableName sets the table name for adapt's meta-table. By default this is
+// MySQLTableName sets the table name for adapts meta-table. By default, this is
 // "_migrations"
 func MySQLTableName(tableName string) MySQLOption {
 	return func(driver *mysqlDriver) error {
@@ -65,7 +65,7 @@ func MySQLTableName(tableName string) MySQLOption {
 
 // MySQLTxBeginOpts provides a factory function for creating a context.Context and
 // *sql.TxOptions. If this factory is provided it will be called when adapt needs
-// to start an sql.Tx for running migrations. By default the values from the Go
+// to start a sql.Tx for running migrations. By default, the values from the Go
 // standard library are use (context.Background() and nil for *sql.TxOptions)
 func MySQLTxBeginOpts(factory func() (context.Context, *sql.TxOptions)) MySQLOption {
 	return func(driver *mysqlDriver) error {
@@ -75,8 +75,8 @@ func MySQLTxBeginOpts(factory func() (context.Context, *sql.TxOptions)) MySQLOpt
 }
 
 // MySQLDisableTx disables transaction for this driver. When set adapt will never
-// run a migration inside a transaction, even when the ParsedMigration reports to
-// use a transaction.
+// run a migration inside a transaction, even when the ParsedMigration reports using
+// a transaction.
 func MySQLDisableTx() MySQLOption {
 	return func(driver *mysqlDriver) error {
 		driver.txDisabled = true
