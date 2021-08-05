@@ -188,7 +188,7 @@ func (d *stmtDriver) ListMigrations() ([]*Migration, error) {
 			DeploymentOrder: deploymentOrder,
 			Down:            down,
 		}
-		if finished.Valid {
+		if finished.Valid && finished.Time.Year() > 1 {
 			m.Finished = &(finished.Time)
 		}
 		if hash.Valid {
