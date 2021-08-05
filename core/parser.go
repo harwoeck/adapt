@@ -106,7 +106,7 @@ func Parse(r io.Reader) (*ParsedMigration, error) {
 			default:
 				return nil, fmt.Errorf("adapt/core.Parse: unknown option at start of line: %q", option)
 			}
-		} else {
+		} else if !strings.HasPrefix(trimmedLine, "-- ") { // skip comment lines that aren't commands
 			// when we are in a statement just write everything to the current buffer
 			if inStatement || !strings.ContainsRune(line, ';') {
 				_, _ = buf.WriteString(line) // error is always nil according to Go documentation
