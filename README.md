@@ -19,33 +19,33 @@
     - **Embed migration folders** containing your SQL scripts
     - Hardcoded SQL statements
 - 🟢 **Branching and merging compatible:** _adapt_ automatically catches up with missing migrations ("holes")
-- 🟢 **Zero** external dependencies*
-
-<sub>* <i>adapt</i> includes <a href="https://pkg.go.dev/github.com/harwoeck/liblog/contract">liblog/contract</a> (a public contract - Go <code>interface</code> - for logging backends, so you can provide your own structured, leveled logging)
+- 🟢 **Zero** external dependencies
+- 🟢 **Customizable Logging:** _adapt_ uses [`slog`](https://pkg.go.dev/log/slog) [included with Go 1.21+](https://go.dev/blog/slog) so that you can provide your own logging backend.
 
 #### Supported Storage `Driver`
 
-- [File](https://pkg.go.dev/github.com/harwoeck/adapt/core#NewFileDriver) - Basic driver that stores migration meta-data in a local JSON file (demonstrates how a `Driver` without any reliance or dependency on `database/sql` can be written.)
-- [MySQL / MariaDB](https://pkg.go.dev/github.com/harwoeck/adapt/core#NewMySQLDriver)
-- [SQLite](https://pkg.go.dev/github.com/harwoeck/adapt/core#NewSQLiteDriver)
-- [PostgreSQL](https://pkg.go.dev/github.com/harwoeck/adapt/core#NewPostgresDriver)
+- [File](https://pkg.go.dev/github.com/harwoeck/adapt#NewFileDriver) - Basic driver that stores migration meta-data in a local JSON file (demonstrates how a `Driver` without any reliance or dependency on `database/sql` can be written.)
+- [MySQL / MariaDB](https://pkg.go.dev/github.com/harwoeck/adapt#NewMySQLDriver)
+- [SQLite](https://pkg.go.dev/github.com/harwoeck/adapt#NewSQLiteDriver)
+- [PostgreSQL](https://pkg.go.dev/github.com/harwoeck/adapt#NewPostgresDriver)
 - [Add driver ?](https://github.com/harwoeck/adapt/issues/new)
 
-**Any other storage backend** by providing your own [`Driver`](https://pkg.go.dev/github.com/harwoeck/adapt/core#Driver), [`DatabaseDriver`](https://pkg.go.dev/github.com/harwoeck/adapt/core#DatabaseDriver) or [`SqlStatementsDriver`](https://pkg.go.dev/github.com/harwoeck/adapt/core#SqlStatementsDriver). Unlike most other migration tools, with _adapt_ there is no reliance on `database/sql` (such a case can be seen with the included `FileDriver`)
+**Any other storage backend** by providing your own [`Driver`](https://pkg.go.dev/github.com/harwoeck/adapt#Driver), [`DatabaseDriver`](https://pkg.go.dev/github.com/harwoeck/adapt#DatabaseDriver) or [`SqlStatementsDriver`](https://pkg.go.dev/github.com/harwoeck/adapt#SqlStatementsDriver). Unlike most other migration tools, with _adapt_ there is no reliance on `database/sql` (such a case can be seen with the included `FileDriver`)
 
 #### Supported Migrations
 
-- [Go Code](https://pkg.go.dev/github.com/harwoeck/adapt/core#NewCodePackageSource)
-- [Filesystem](https://pkg.go.dev/github.com/harwoeck/adapt/core#NewFilesystemSource)
-- [In-memory](https://pkg.go.dev/github.com/harwoeck/adapt/core#NewMemoryFSSource)
-- [Embedded Filesystem](https://pkg.go.dev/github.com/harwoeck/adapt/core116#NewEmbedFSSource) - Using Go 1.16+ [go:embed](https://pkg.go.dev/embed)
+- [Go Code](https://pkg.go.dev/github.com/harwoeck/adapt#NewCodePackageSource)
+- [Filesystem](https://pkg.go.dev/github.com/harwoeck/adapt#NewFilesystemSource)
+- [In-memory](https://pkg.go.dev/github.com/harwoeck/adapt#NewMemoryFSSource)
+- [Embedded Filesystem](https://pkg.go.dev/github.com/harwoeck/adapt#NewEmbedFSSource) - Using Go 1.16+ [go:embed](https://pkg.go.dev/embed)
 
+> [!NOTE]
 > Please support this project and provide additional sources that could be useful for other people
 
 ### Install
 
 ```bash
-$ go get github.com/harwoeck/adapt/core
+$ go get github.com/harwoeck/adapt
 ```
 
 ## Usage
@@ -61,13 +61,14 @@ err := adapt.Migrate(
     })
 ```
 
-**Next example:** Due to compliance rules you decide encrypt the email address of your users inside your database. Using _adapt_ you simply provide one of [`adapt.Hook`](https://pkg.go.dev/github.com/harwoeck/adapt/core#Hook)'s callback functions and during your next deployment _adapt_ will notice that this migration hasn't been applied and therefore call your migration hook. When no error is returned _adapt_ will commit the transaction and update the schema table with the relevant meta information.
+> [!NOTE]
+> **Next example:** Due to compliance rules you decide to encrypt your users email addresses inside your database. Since this requires actual Go code (and not just SQL statements), you could implement one of the [`adapt.Hook`](https://pkg.go.dev/github.com/harwoeck/adapt#Hook) functions and during your next deployment _adapt_ will notice this new unapplied migration and execute your hook. When no error is returned _adapt_ will commit the transaction and update the schema table with the relevant meta information.
 
 ```go
 err := adapt.Migrate(
     "backend@v0.1.17",                      // <name> of executor
     adapt.NewMySQLDriver(db),               // Database driver
-    adapt.SourceCollection{
+    adapt.SourceCollection{                 // adapt will automatically merge and sort all provided sources for you
         adapt.NewFilesystemSource("./sql"), // SQL-Migration-Scripts from filesystem
         adapt.NewCodeSource("2020-04-17_1104_encrypt-user-email", adapt.Hook{
             MigrateUpTx: func(tx *sql.Tx) error {
